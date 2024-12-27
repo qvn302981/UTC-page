@@ -1,76 +1,33 @@
 "use client";
 import React, { useState } from "react";
 import {
-  Drawer,
   List,
-  ListItem,
   ListItemIcon,
   ListItemText,
   Typography,
-  Box,
   Collapse,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
-import Link from "next/link";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-
-const StyledDrawer = styled(Drawer)(() => ({
-  borderRadius: "20px",
-  width: 280,
-  flexShrink: 0,
-  "& .MuiDrawer-paper": {
-    width: 280,
-    boxSizing: "border-box",
-    top: "110px",
-  },
-}));
-
-const StyledLink = styled(Link)(() => ({
-  display: "flex",
-  justifyContent: "space-around",
-  alignItems: "center",
-}));
-
-const StyledListItem = styled(ListItem)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: theme.spacing(1),
-  padding: theme.spacing(1.5),
-  "&:hover": {
-    backgroundColor: theme.palette.action.hover,
-  },
-}));
-
-const StyledSubItem = styled(ListItem)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: theme.spacing(1),
-  padding: theme.spacing(1.5),
-  "&:hover": {
-    backgroundColor: theme.palette.primary.light,
-  },
-}));
-
-const SidebarHeader = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(2),
-  textAlign: "center",
-  backgroundColor: theme.palette.primary.main,
-  color: theme.palette.common.white,
-}));
+import { SidebarHeader, StyledDrawer, StyledListItem, StyledSubItem, StyleSubText } from "./Sidebar.types";
+import { StyledLink } from "../style.types";
 
 export const Sidebar: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState<{ [key: string]: boolean }>({});
+  const [activePath, setActivePath] = useState<string | null>(null);
   const toggleKnowledge = (path: string) => {
     setMenuOpen((prev) => ({
       ...prev,
       [path]: !prev[path],
     }));
+  };
+  const handleActive = (path: string) => {
+    setActivePath(path);
   };
 
   const menuItems = [
@@ -124,14 +81,18 @@ export const Sidebar: React.FC = () => {
                   <ListItemText primary={item.label} sx={{}} />
                   {menuOpen[item.path] ? <ExpandLessIcon /> : <KeyboardArrowDownIcon />}
                 </StyledListItem>
-                <Collapse in={menuOpen[item.path]} timeout="auto" unmountOnExit>
+                <Collapse in={!!menuOpen[item.path || item.label]} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
                     {item.children.map((subItem, subIndex) => (
-                      <StyledListItem key={subIndex} sx={{ pl: 4 }}>
+                      <StyledSubItem
+                        key={subIndex}
+                        active={activePath === subItem.path}
+                        onClick={() => handleActive(subItem.path)}
+                      >
                         <StyledLink href={subItem.path}>
-                          <ListItemText primary={subItem.label}></ListItemText>
+                          <StyleSubText primary={subItem.label}></StyleSubText>
                         </StyledLink>
-                      </StyledListItem>
+                      </StyledSubItem>
                     ))}
                   </List>
                 </Collapse>

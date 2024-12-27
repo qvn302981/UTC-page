@@ -8,7 +8,6 @@ import {
   Toolbar,
   Typography,
   IconButton,
-  InputBase,
   Menu,
   MenuItem,
   Box,
@@ -16,61 +15,13 @@ import {
   Select,
 } from "@mui/material";
 import { Search, AccountCircle } from "@mui/icons-material";
-import { styled, alpha } from "@mui/material/styles";
-import ImageLogo from "../assets/images/LogoUTC.png";
+import ImageLogo from "../../assets/images/LogoUTC.png";
 import PersonIcon from "@mui/icons-material/Person";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import LogoutIcon from "@mui/icons-material/Logout";
-
-const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: theme.spacing(1),
-  marginBottom: theme.spacing(0.5),
-}));
-
-const IconContainer = styled(Box)(() => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-const SearchBar = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginLeft: 0,
-  width: "100%",
-  [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(1),
-    width: "auto",
-  },
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("md")]: {
-      width: "20ch",
-    },
-  },
-}));
+import { IconContainer, SearchBar, SearchIconWrapper, StyledInputBase, StyledMenuItem } from "./Header.types";
+import { StyledLink } from "../style.types";
 
 export const Header: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -172,10 +123,12 @@ export const Header: React.FC = () => {
               onClose={handleClose}
             >
               <StyledMenuItem onClick={handleClose}>
-                <IconContainer>
-                  <PersonIcon fontSize="small" />
-                </IconContainer>
-                <Typography>Thông tin cá nhân</Typography>
+                <StyledLink href="/update-information">
+                  <IconContainer>
+                    <PersonIcon fontSize="small" />
+                  </IconContainer>
+                  <Typography>Thông tin cá nhân</Typography>
+                </StyledLink>
               </StyledMenuItem>
 
               <StyledMenuItem onClick={handleClose}>
