@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Header } from "../components/Header";
-import { Sidebar } from "../components/Sidebar";
+import { Header } from "../components/Header/Header";
+import { Sidebar } from "../components/Sidebar/Sidebar";
 import { Box } from "@mui/material";
 import React from "react";
 
@@ -28,9 +28,11 @@ export default function RootLayout({
                 position: "relative",
                 width: "100vw",
                 top: "104px",
-                border: "2px solid #56a4fe",
+                boxShadow: 3,
+                borderRadius: 2,
+                backgroundColor: "white",
                 padding: "6px",
-                margin: "6px",
+                margin: "6px 20px",
               }}
             >
               {children}
