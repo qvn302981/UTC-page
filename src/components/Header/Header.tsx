@@ -146,10 +146,12 @@ export const Header: React.FC = () => {
               </StyledMenuItem>
 
               <StyledMenuItem onClick={handleClose}>
-                <IconContainer>
-                  <LogoutIcon fontSize="small" />
-                </IconContainer>
-                <Typography>Đăng xuất</Typography>
+                <StyledLink href="/login">
+                  <IconContainer>
+                    <LogoutIcon fontSize="small" />
+                  </IconContainer>
+                  <Typography>Đăng xuất</Typography>
+                </StyledLink>
               </StyledMenuItem>
             </Menu>
           </div>

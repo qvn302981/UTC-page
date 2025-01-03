@@ -1,4 +1,5 @@
-import React from "react";
+'use client'
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Typography,
@@ -6,11 +7,51 @@ import {
     Button,
     Grid,
     Avatar,
-    IconButton
+    IconButton,
+    FormControl,
+    InputLabel,
+    OutlinedInput,
+    InputAdornment
 } from "@mui/material";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "../../../firebase/config";
+import { useSearchParams } from "next/navigation";
 
 export default function UpdateForm() {
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const searchParams = useSearchParams();
+    const [name, setName] = useState<string>(searchParams.get("name") || "");
+    const [email, setEmail] = useState<string>(searchParams.get("email") || "");
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: '',
+        birthdate: '',
+        phone: '',
+        address: ''
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleClickShowPassword = () => {
+        setShowPassword((show) => !show)
+    };
+
+    useEffect(() => {
+        // Nếu cần load thêm dữ liệu từ backend
+        console.log("Name:", name, "Email:", email);
+    }, [name, email]);
+
+    const handleUpdate = () => {
+        console.log("Updating user data:", { name, email });
+        // Gửi dữ liệu cập nhật lên Firebase hoặc Backend API
+    };
+
     return (
         <Box
             sx={{
@@ -42,9 +83,6 @@ export default function UpdateForm() {
                     <input hidden accept="image/*" type="file" />
                     <PhotoCamera />
                 </IconButton>
-                <Typography variant="caption" display="block">
-                    Nhấn vào đây để thay ảnh
-                </Typography>
             </Box>
 
             <Grid container spacing={2}>
@@ -54,7 +92,10 @@ export default function UpdateForm() {
                         variant="outlined"
                         fullWidth
                         required
+                        name="name"
+                        value={name}
                         autoFocus
+                        onChange={(e) => setName(e.target.value)}
                     />
                 </Grid>
                 <Grid item xs={12}>
@@ -64,15 +105,47 @@ export default function UpdateForm() {
                         fullWidth
                         required
                         type="email"
+                        value={email}
+                        name="email"
+                        onChange={(e) => setEmail(e.target.value)}
                     />
                 </Grid>
                 <Grid item xs={12}>
+                    <FormControl sx={{ width: '25ch' }} variant="outlined">
+                        <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                        <OutlinedInput
+                            id="outlined-adornment-password"
+                            type={showPassword ? 'text' : 'password'}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label={
+                                            showPassword ? 'hide the password' : 'display the password'
+                                        }
+                                        onClick={handleClickShowPassword}
+                                        edge="end"
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            label="Password"
+                            name="password"
+                            onChange={handleChange}
+                            value={formData.password}
+                        />
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12}>
                     <TextField
+                        required
+                        fullWidth
+                        type="date"
+                        name="birthdate"
                         label="Ngày sinh"
                         variant="outlined"
-                        fullWidth
-                        required
-                        type="date"
+                        onChange={handleChange}
+                        value={formData.birthdate}
                         InputLabelProps={{
                             shrink: true,
                         }}
@@ -80,21 +153,27 @@ export default function UpdateForm() {
                 </Grid>
                 <Grid item xs={12}>
                     <TextField
-                        label="Số Điện Thoại"
-                        variant="outlined"
-                        fullWidth
-                        required
                         type="tel"
+                        required
+                        fullWidth
+                        name="phone"
+                        variant="outlined"
+                        label="Số Điện Thoại"
+                        value={formData.phone}
+                        onChange={handleChange}
                     />
                 </Grid>
                 <Grid item xs={12}>
                     <TextField
-                        label="Địa chỉ"
-                        variant="outlined"
-                        fullWidth
+                        rows={3}
                         required
                         multiline
-                        rows={3}
+                        fullWidth
+                        name="address"
+                        label="Địa chỉ"
+                        variant="outlined"
+                        value={formData.address}
+                        onChange={handleChange}
                     />
                 </Grid>
             </Grid>
@@ -107,7 +186,7 @@ export default function UpdateForm() {
                     marginTop: 4,
                 }}
             >
-                <Button variant="contained" color="primary" size="large">
+                <Button onSubmit={handleUpdate} variant="contained" color="primary" size="large">
                     Lưu
                 </Button>
                 <Button variant="outlined" color="secondary" size="large">

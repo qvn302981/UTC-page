@@ -1,22 +1,45 @@
 "use client";
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
-import Link from "next/link";
-import React, { useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { db } from "../../../firebase/config"; // Đường dẫn cấu hình Firebase
+import { doc, getDoc } from "firebase/firestore";
+import { Box, Button, Container, Link, TextField, Typography } from "@mui/material";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const router = useRouter()
 
-  const handleSubmit = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    if (!email || !password) {
-      setError("Please fill in both fields");
-      return;
+  const handleLogin = async (event: any) => {
+    event.preventDefault();
+    const auth = getAuth();
+
+    try {
+      // Xác thực với Firebase Authentication
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      console.log("Đăng nhập thành công:", user);
+
+      // Lấy thông tin người dùng từ Firestore
+      const userDoc = doc(db, "auth", user.uid);
+      const docSnap = await getDoc(userDoc);
+
+      if (docSnap.exists()) {
+        const userData = docSnap.data();
+        console.log("Thông tin người dùng:", userData);
+
+        // Chuyển sang trang update và truyền dữ liệu
+        router.push(`/update?name=${userData.name}&email=${userData.email}`);
+      } else {
+        console.error("Không tìm thấy thông tin người dùng");
+      }
+    } catch (error: any) {
+      console.error("Lỗi đăng nhập:", error.message);
+      setError("Đăng nhập thất bại. Vui lòng kiểm tra email hoặc mật khẩu.");
     }
-    setError("");
-    console.log("Email:", email);
-    console.log("Password:", password);
   };
   return (
     <Container
@@ -48,7 +71,7 @@ const LoginPage = () => {
           Login
         </Typography>
         {error && <Typography color="error">{error}</Typography>}
-        <form onSubmit={handleSubmit} style={{ width: "100%", marginTop: "1.5rem" }}>
+        <form onSubmit={handleLogin} style={{ width: "100%", marginTop: "1.5rem" }}>
           <TextField
             required
             fullWidth

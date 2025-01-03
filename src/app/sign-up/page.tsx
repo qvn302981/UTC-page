@@ -1,8 +1,37 @@
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
+"use client";
 import Link from "next/link";
-import React from "react";
+import { useState } from "react";
+import { db } from "../../../firebase/config";
+import { addDoc, collection } from "firebase/firestore";
+import { Box, Button, Container, TextField, Typography } from "@mui/material";
 
 const SignUp = () => {
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (event: any) => {
+    event.preventDefault();
+    try {
+      if (!email || !name || !password) {
+        setError("Vui lòng điền thông tin!");
+        return;
+      }
+      const docRef = await addDoc(collection(db, "auth"), {
+        email,
+        name,
+        password
+      });
+      setError("Đăng ký thành công!");
+      console.log("Document written with ID: ", docRef.id);
+      setEmail('')
+      setPassword('')
+      setName('')
+    } catch (error) {
+      setError("Có lỗi xảy ra, Vui lòng thử lại sau.")
+    }
+  };
   return (
     <Container
       maxWidth="xs"
@@ -32,30 +61,36 @@ const SignUp = () => {
         <Typography variant="h4" fontWeight="500" gutterBottom>
           Sign up
         </Typography>
-        <form style={{ width: "100%", marginTop: "1.5rem" }}>
+        <form onSubmit={handleSubmit} style={{ width: "100%", marginTop: "1.5rem" }}>
           <TextField
             required
             fullWidth
-            label="Username, Email or Number phone"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            label="Full Name"
             margin="normal"
             variant="outlined"
           />
           <TextField
             required
+            fullWidth
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            label="Email or Number phone"
+            margin="normal"
+            variant="outlined"
+          />
+          <TextField
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             fullWidth
             label="Password"
             type="password"
             variant="outlined"
             margin="normal"
           />
-          <TextField
-            required
-            fullWidth
-            label="Password"
-            type="password"
-            variant="outlined"
-            margin="normal"
-          />
+
           <Button
             fullWidth
             type="submit"
@@ -64,9 +99,12 @@ const SignUp = () => {
             variant="contained"
             sx={{ marginTop: 2 }}
           >
-            Sign up
+            <Link href="/login">
+              Sign up
+            </Link>
           </Button>
         </form>
+        {error && <span>{error}</span>}
         <Box
           sx={{
             display: "flex",
